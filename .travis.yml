@@ -8,10 +8,22 @@ services:
 ## 스크립트를 실행할 수 있는 환경 ##
 before_install: 
   - echo "start Creating an image with dockerfile"
-  - docker build -t docker-react-app -f Dockerfile.dev ./  #운영 도커파일 아닌가?
+  - docker build -t docker-react-app -f Dockerfile.dev ./
 ## 실행할 스크립트(테스트실행) ## 
 script: 
   - docker run -e CI=true docker-react-app npm run test -- --coverage
 ## 테스트 성공 후 할일 ## 
 after_success: 
   - echo "Test Success"
+## AWS 배포 ##
+deploy: 
+  provider: elasticbeanstalk
+  region: "ap-northeast-1"
+  app: "docker-react-app"
+  env: "Dockerreactapp-env"
+  bucket_name: "elasticbeanstalk-ap-northeast-1-776047395321"
+  bucket_path: "docker-react-app"
+  on: 
+    branch: master
+access_key_id: $AWS_ACCESS_KEY
+secret_access_key: $AWS_SECRET_ACCESS_KEY
